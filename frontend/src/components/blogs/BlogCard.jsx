@@ -1,12 +1,19 @@
 "use client";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { MdOutlineKeyboardDoubleArrowLeft } from "react-icons/md";
-import { Button } from "@material-tailwind/react";
 
-const BlogCard = ({ props }) => {
+const BlogCard = ({ props, id }) => {
   const { title, description, tags } = props;
+  const router = useRouter();
+  const handleClick = () => {
+    router.push(`/blog/${id}`);
+  };
   return (
-    <div className="bg-primaryColor/20 rounded-2xl p-3 md:p-5 cursor-pointer hover:scale-105 transition-all duration-150 relative">
+    <div
+      className="bg-primaryColor/20 rounded-2xl p-3 md:p-5 cursor-pointer hover:scale-105 transition-all duration-150 relative"
+      onClick={handleClick}
+    >
       {/* title */}
       <h2 className="text-lg sm:text-xl text-primaryColor font-bold mb-2">
         {title}
