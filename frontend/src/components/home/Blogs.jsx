@@ -1,8 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
 import BlogCard from "../blogs/BlogCard";
 import CustomInput from "../utility/CustomInput";
 import { IoSearch } from "react-icons/io5";
+import { baseUrl } from "@/api/baseUrl";
+import axios from "axios";
+import useApi from "../utility/useApi";
+import { useEffect } from "react";
 
 export const blogPosts = [
   {
@@ -79,17 +82,35 @@ export const blogPosts = [
     ],
   },
 ];
-const Blogs = ({ blogs }) => {
-  useEffect(() => {
-    const fetD = async () => {
-      const getBlogs = await fetch(`${baseUrl}/blogs`);
-      const res = await getBlogs.json();
-      console.log(res);
-      return res;
-    };
-    fetD();
-  }, []);
+
+const Blogs = () => {
+  const { data: blogs, loading, error, get } = useApi();
+
+  // const res = await fetch(`${baseUrl}/blog`);
+  // console.log(res);
+
+  // const blogs = await res.json();
+
+  // if (blogs.message === "EndPoint Is Not Found") {
+  //   return console.log("first");
+  // }
   console.log(blogs);
+
+  useEffect(() => {
+    get(`${baseUrl}/blogs`);
+  }, []);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+  if (blogs.message === "EndPoint Is Not Found") {
+    return <p>Error: {blogs.message}</p>;
+  }
+
   return (
     <section className="container mt-10">
       <div className="">
@@ -100,9 +121,8 @@ const Blogs = ({ blogs }) => {
         />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-10 gap-5">
-        {blogPosts.map((item, i) => (
-          <BlogCard key={i} props={item} id={i} />
-        ))}
+        {blogs &&
+          blogs.data.map((item, i) => <BlogCard key={i} props={item} id={i} />)}
       </div>
     </section>
   );
