@@ -6,6 +6,7 @@ import { baseUrl } from "@/api/baseUrl";
 import axios from "axios";
 import useApi from "../utility/useApi";
 import { useEffect } from "react";
+import { useGetBlogsQuery } from "@/redux/features/blogs/blogSlice";
 
 export const blogPosts = [
   {
@@ -84,31 +85,22 @@ export const blogPosts = [
 ];
 
 const Blogs = () => {
-  const { data: blogs, loading, error, get } = useApi();
+  // const { data: blogs, loading, error, get } = useApi();
 
-  // const res = await fetch(`${baseUrl}/blog`);
-  // console.log(res);
+  const { data, error, isError, isSuccess ,isLoading} = useGetBlogsQuery();
 
-  // const blogs = await res.json();
+  console.log(data);
+  console.log(error);
+  console.log(isSuccess);
 
-  // if (blogs.message === "EndPoint Is Not Found") {
-  //   return console.log("first");
-  // }
-  console.log(blogs);
-
-  useEffect(() => {
-    get(`${baseUrl}/blogs`);
-  }, []);
-
-  if (loading) {
+  if (isLoading) {
     return <p>Loading...</p>;
   }
-
-  if (error) {
-    return <p>Error: {error.message}</p>;
+  if (isSuccess && data.message === "EndPoint Is Not Found") {
+    return <p>Error: {data.message}</p>;
   }
-  if (blogs.message === "EndPoint Is Not Found") {
-    return <p>Error: {blogs.message}</p>;
+  if (isError) {
+    return <p>Error: {error.status}</p>;
   }
 
   return (
@@ -120,10 +112,14 @@ const Blogs = () => {
           icon={<IoSearch />}
         />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-10 gap-5">
-        {blogs &&
-          blogs.data.map((item, i) => <BlogCard key={i} props={item} id={i} />)}
-      </div>
+      {
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 mt-10 gap-5">
+          {isSuccess &&
+            data?.data.map((item, i) => (
+              <BlogCard key={i} props={item} id={i} />
+            ))}
+        </div>
+      }
     </section>
   );
 };
